@@ -14,6 +14,7 @@ from napari_chatgpt.omega.tools.functions_info import PythonFunctionsInfoTool
 from napari_chatgpt.omega.tools.human_input_tool import HumanInputTool
 from napari_chatgpt.omega.tools.math_tool import MathTool
 from napari_chatgpt.omega.tools.napari_file_open import NapariFileOpenTool
+from napari_chatgpt.omega.tools.napari_assistant_tool import NapariAssistantFunctionSearchTool
 from napari_chatgpt.omega.tools.napari_viewer_control import \
     NapariViewerControlTool
 from napari_chatgpt.omega.tools.napari_viewer_query import NapariViewerQueryTool
@@ -82,6 +83,15 @@ def initialize_omega_agent(to_napari_queue: Queue = None,
                                            to_napari_queue=to_napari_queue,
                                            from_napari_queue=from_napari_queue,
                                            callback_manager=tool_callback_manager))
+
+        try:
+            import napari_assistant # if the napari-assistant is installed, add its tool to the list
+            tools.append(NapariAssistantFunctionSearchTool(llm=tool_llm,
+                                                       to_napari_queue=to_napari_queue,
+                                                       from_napari_queue=from_napari_queue,
+                                                       callback_manager=tool_callback_manager))
+        except:
+            pass
 
     agent = OmegaAgent.from_llm_and_tools(
         llm=main_llm,
